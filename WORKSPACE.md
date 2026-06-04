@@ -1,5 +1,15 @@
 # Warm Haven 작업 기록
 
+## 2026-06-04 슬라이스 4~6 (safety / private-photos DB 전환)
+
+- 차단·신고·공개 요청 사진(등록·열람 권한)을 데모 영수증 → 인증 프로필 기준 DB 저장으로 전환.
+- safety: 차단 멱등(uq_block_pair), 신고는 매번 INSERT(대화방 근거 첨부 시 참가자 검증).
+- private-photos: 사진 메타 등록 엔드포인트(`POST /private-photos`) 추가, 권한 부여/철회/재부여
+  (uq_photo_viewer 충돌 시 기존 행 되살리는 멱등 upsert).
+- 스키마에서 actor id 필드(blocker/reporter/owner) 제거 — 인증 프로필로 결정(likes/chats와 일관).
+- 테스트 32개 green. 검증: `python -m unittest discover -s tests -t .`
+- 잔여 정리거리: `app/services/demo_catalog.py`의 receipt/PEOPLE/CHATS는 죽은 코드.
+
 ## 2026-06-01 초기 생성
 
 ### 가져온 자산

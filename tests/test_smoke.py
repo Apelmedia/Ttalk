@@ -51,15 +51,14 @@ class SmokeTest(TestCase):
         response = self.client.get("/v1/people", params={"region": "마포"})
         self.assertEqual(response.status_code, 401)
 
-    def test_report_receipt_is_demo_only(self):
+    def test_report_requires_auth(self):
+        # 신고는 이제 인증·DB 기반이다. 비인증 요청은 거부된다.
         response = self.client.post(
             "/v1/safety/reports",
             json={
-                "reporter_profile_id": "profile-demo-me",
                 "target_profile_id": "profile-demo-target",
                 "category": "stalking",
                 "summary": "demo",
             },
         )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["status"], "demo_only")
+        self.assertEqual(response.status_code, 401)

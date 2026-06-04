@@ -82,12 +82,19 @@ class ChatSummary(BaseModel):
 
 
 class BlockRequest(BaseModel):
-    blocker_profile_id: str
+    # blocker는 요청 본문이 아니라 인증된 프로필로 결정한다.
     blocked_profile_id: str
 
 
+class BlockView(BaseModel):
+    id: str
+    blocker_profile_id: str
+    blocked_profile_id: str
+    created_at: datetime
+
+
 class ReportRequest(BaseModel):
-    reporter_profile_id: str
+    # reporter는 인증된 프로필로 결정한다.
     target_profile_id: str
     conversation_id: str | None = None
     category: Literal[
@@ -102,8 +109,42 @@ class ReportRequest(BaseModel):
     summary: str = Field(default="", max_length=2000)
 
 
-class PrivatePhotoGrantRequest(BaseModel):
+class ReportView(BaseModel):
+    id: str
+    reporter_profile_id: str
+    target_profile_id: str
+    conversation_id: str | None = None
+    category: str
+    summary: str
+    status: str
+    created_at: datetime
+
+
+class PrivatePhotoCreateRequest(BaseModel):
+    # owner는 인증된 프로필로 결정한다. 바이너리 업로드/암호화 저장소는 보류이며
+    # 여기서는 메타데이터(object_key)만 등록한다.
+    object_key: str = Field(min_length=1, max_length=512)
+
+
+class PrivatePhotoView(BaseModel):
+    id: str
     owner_profile_id: str
+    object_key: str
+    status: str
+    created_at: datetime
+
+
+class PrivatePhotoGrantRequest(BaseModel):
+    # owner는 인증된 프로필로 결정한다.
     viewer_profile_id: str
     photo_id: str
+
+
+class PrivatePhotoGrantView(BaseModel):
+    id: str
+    photo_id: str
+    owner_profile_id: str
+    viewer_profile_id: str
+    revoked_at: datetime | None = None
+    created_at: datetime
 
